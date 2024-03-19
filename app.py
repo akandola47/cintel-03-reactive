@@ -1,4 +1,4 @@
-import plotly.express as px
+ import plotly.express as px
 from shiny.express import input, ui
 from shinywidgets import render_plotly
 import palmerpenguins  # This package provides the Palmer Penguins dataset
@@ -7,7 +7,7 @@ import seaborn as sns
 from shiny import reactive, render, req
 
 # Use the built-in function to load the Palmer Penguins dataset
-penguins_df = palmerpenguins.load_penguins()
+filtered_data= palmerpenguins.load_penguins()
 
 # names the page
 ui.page_opts(title="arsh club penguin", fillable=True)
@@ -59,8 +59,7 @@ with ui.layout_columns():
 
     @render.data_frame
     def render_penguins():
-        return penguins_df
-
+        return filtered_data()
 # Creates a DataGrid showing all data
 
 with ui.layout_columns():        
@@ -72,7 +71,7 @@ with ui.layout_columns():
 
 @render.data_frame
 def penguins_data():
-    return render.DataGrid(penguins_df, row_selection_mode="multiple") 
+    return render.DataGrid(filtered_data(), row_selection_mode="multiple") 
 
 # Creates a Plotly Histogram showing all species
 
@@ -82,7 +81,7 @@ with ui.card(full_screen=True):
     @render_plotly
     def plotly_histogram():
         return px.histogram(
-            penguins_df, x=input.selected_attribute(), nbins=input.plotly_bin_count()
+            filtered_data(), x=input.selected_attribute(), nbins=input.plotly_bin_count()
         )
 
 # Creates a Seaborn Histogram showing all species
@@ -92,7 +91,7 @@ with ui.card(full_screen=True):
 
     @render.plot(alt="Seaborn Histogram")
     def seaborn_histogram():
-        histplot = sns.histplot(data=penguins_df, x="body_mass_g", bins=input.seaborn_bin_count())
+        histplot = sns.histplot(data=filtered_data(), x="body_mass_g", bins=input.seaborn_bin_count())
         histplot.set_title("arsh club penguins")
         histplot.set_xlabel("Mass")
         histplot.set_ylabel("Count")
@@ -105,7 +104,7 @@ with ui.card(full_screen=True):
 
     @render_plotly
     def plotly_scatterplot():
-        return px.scatter(penguins_df,
+        return px.scatter(filtered_data,
             x="bill_length_mm",
             y="body_mass_g",
             color="species",
